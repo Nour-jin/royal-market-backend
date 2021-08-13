@@ -31,8 +31,11 @@ try {
 
 exports.getProducts = async (req, res, next) => {
   try {
- 
-    const products = await Product.aggregate(aggregations(req.user._id, req.query.query))
+    let products = await Product.find();
+      if (req.user) {
+        products = await Product.aggregate(aggregations(req.user._id, req.query.query))
+      }
+    
     await Product.populate(products, { select: "-tokens -password", path: "owner" })
     await Product.populate(products, {path:"likeCount"})
 
@@ -63,16 +66,17 @@ exports.searchProducts = async (req, res, next) => {
 };
 
 
-
-
 exports.getProduct = async (req, res, next) => {
-
   try {
-   const product = await Product.aggregate(aggregation(req.user._id, req.params.id))
+    let product = await Product.findById(req.params.id)
+    if (req.user) {
+      const data = await Product.aggregate(aggregation(req.user._id, req.params.id))
+      product = data[0]
+    }
     await Product.populate(product, { select: "-tokens -password", path: "owner" })
     await Product.populate(product, {path:"likeCount"})
     if (!product) throw new createError.NotFound();
-    res.status(200).send(product[0]);
+    res.status(200).send(product);
   } catch (e) {
     next(e);
   }
@@ -146,7 +150,11 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.getDealProducts = async (req, res, next) => {
   try {
-    const product = await Product.aggregate(aggregationDeal(req.user._id))
+     let product = await Product.find({ $expr: { $gt: ["$oldPrice", "$price"] }})
+    if (req.user) {
+      product = await Product.aggregate(aggregationDeal(req.user._id))
+    }
+   
     if (!product) throw new createHttpError.NotFound();
   //  const newList = await Product.find()
       res.status(200).send(product);
