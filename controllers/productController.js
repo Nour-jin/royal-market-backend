@@ -53,8 +53,11 @@ exports.searchProducts = async (req, res, next) => {
     const newOptions = { title: { "$regex": req.query.query, "$options": "i" } }
     const products = await Product.find(req.query.query ? newOptions : {}).populate({ select: "-tokens -password", path: "owner" }).populate('likeCount')
     */
-    const products = await Product.aggregate(aggregationsSearch(req.user._id, req.query.query))
-
+    const newOptions = { title: { "$regex": req.query.query, "$options": "i" } }
+    let products = await await Product.find(req.query.query ? newOptions : {})
+    if (req.user) {
+      products = await Product.aggregate(aggregationsSearch(req.user._id, req.query.query))
+    }
     await Product.populate(products, { select: "-tokens -password", path: "owner" })
     await Product.populate(products, {path:"likeCount"})
 
