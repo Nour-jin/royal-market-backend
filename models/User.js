@@ -28,7 +28,7 @@ const UserSchema = new Schema(
       required: true,
       trim: true,
       minlength: 3,
-     /* validate: {
+      validate: {
         validator: function (name) {
           const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
           console.log(format.test(name))
@@ -36,7 +36,6 @@ const UserSchema = new Schema(
         },
         message: "username should not contain . or - of blank space.",
       },
-      */
     },
     likes: [{
       ref: "Product",
@@ -74,8 +73,6 @@ const UserSchema = new Schema(
     },
   }
 );
-
-
 
 
 UserSchema.virtual("fullName").get(function () {

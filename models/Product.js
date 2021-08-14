@@ -3,38 +3,56 @@ var mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 var User = require("./User");
 var { Schema } = mongoose;
 
+const notEmptyRan = [];
+const notEmptyMsg = 'Please add at least one feature in the features array';
+
+
+var notEmpty = function (columns) {
+  if (columns.length === 0) { notEmptyRan.push(false); return false; }
+  else { notEmptyRan.push(true); return true; }
+};
+
 const ProductSchema = new Schema(
   {
     title: {
       type: String,
+      required: true
     },
     category: {
       type: String,
+      required: true
     },
     price: {
       type: Number,
+      required: true
     },
     oldPrice: {
       type: Number,
     },
     description: {
       type: String,
+      required: true
     },
     owner: {
       ref: "User",
       type: mongoose.Schema.Types.ObjectId,
     },
-    img: [
+    img: { type:[
       {
         original: {
           type: String,
+          required: true,
+      
         },
         thumb: {
           type: String,
         },
         color: Object,
       },
+      
     ],
+    validate: [notEmpty, notEmptyMsg]
+    },
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
