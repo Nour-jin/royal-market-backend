@@ -28,9 +28,7 @@ exports.getUser = async (req, res, next) => {
 
 exports.getWatchProducts = async (req, res, next) => {
   try {
-
     const user = await User.findById(req.user._id).populate({ path: "likes", populate :{path: "likeCount"}})
-
     res.status(200).send(user.likes);
   } catch (e) {
     console.log(e)

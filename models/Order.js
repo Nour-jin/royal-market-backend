@@ -8,6 +8,10 @@ const OrderSchema = new Schema({
         ref: "Product",
         type: mongoose.Schema.Types.ObjectId
       },
+      user: {
+        ref: "User",
+        type: mongoose.Schema.Types.ObjectId
+      },
       amount: {
         type: Number
       }
